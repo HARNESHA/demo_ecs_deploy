@@ -20,6 +20,7 @@ pipeline {
                sh '''
                 rm -rf node_modules 
                 rm -r package-lock.json
+                ls -alh
                 npm install
                 npm install -g pm2'''
             }
