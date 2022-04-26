@@ -21,9 +21,16 @@ pipeline {
                 rm -rf node_modules 
                 rm -r package-lock.json
                 ls -alh
-                npm install -g pm2
                 npm install
                 '''
+            }
+        }
+
+        stage('check') {
+            steps {
+              sh '''node --version
+                    npm --version
+                    pm2 --version'''
             }
         }
 
