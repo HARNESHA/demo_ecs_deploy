@@ -19,7 +19,7 @@ pipeline {
             steps {
                sh '''
                 npm install
-                npm install pm2'''
+                npm install -g pm2'''
             }
         }
 
