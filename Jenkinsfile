@@ -1,13 +1,34 @@
 pipeline {
     agent any
 
+
+    tools {nodejs "node"}
+
     stages {
-        stage('Hello') {
+
+        stage('info') {
             steps {
-               sh '''pwd
-                ls -alh
-                cat server.js'''
+               sh '''id
+                    pwd
+                    ls -alh
+                    '''
             }
         }
-    }
+
+        stage('Build') {
+            steps {
+               sh '''npm install -g npm@latest
+                npm install pm2 -g
+                npm install'''
+            }
+        }
+
+        stage('check') {
+            steps {
+              sh '''node --version
+                    npm --version
+                    pm2 --version'''
+            }
+        }
+    }     
 }
