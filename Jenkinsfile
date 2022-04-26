@@ -18,7 +18,8 @@ pipeline {
         stage('Build') {
             steps {
                sh '''
-                npm install'''
+                npm install
+                npm install pm2'''
             }
         }
 
