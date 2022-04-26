@@ -18,6 +18,8 @@ pipeline {
         stage('Build') {
             steps {
                sh '''
+                rm -rf node_modules 
+                rm -r package-lock.json
                 npm install
                 npm install -g pm2'''
             }
