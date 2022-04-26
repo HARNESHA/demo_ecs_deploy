@@ -34,11 +34,11 @@ pipeline {
             }
         }
 
-        stage('check') {
+        stage('deploy') {
             steps {
-              sh '''node --version
-                    npm --version
-                    pm2 --version'''
+              sh '''
+                pm2 start server.js
+              '''
             }
         }
     }     
