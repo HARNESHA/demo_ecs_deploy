@@ -5,7 +5,8 @@ pipeline {
         stage('Hello') {
             steps {
                sh '''pwd
-                ls -alh'''
+                ls -alh
+                cat server.js'''
             }
         }
     }
