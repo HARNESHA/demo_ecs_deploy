@@ -37,6 +37,8 @@ pipeline {
         stage('deploy') {
             steps {
               sh '''
+                pwd
+                ls -alh
                 pm2 start server.js
               '''
             }
