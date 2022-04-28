@@ -37,7 +37,7 @@ pipeline {
             steps {
               sh '''
                 ls -alh
-                pm2 start server.js \\&
+                pm2 start server.js
                 netstat -ntlp
               '''
             }
