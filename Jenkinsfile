@@ -38,6 +38,7 @@ pipeline {
               sh '''
                 ls -alh
                 pm2 start server.js
+                netstat -ntlp
               '''
             }
         }
