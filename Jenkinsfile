@@ -1,46 +1,71 @@
 pipeline {
     agent any
 
-
-    tools {nodejs "node"}
-
     stages {
-
         stage('info') {
             steps {
-               sh '''id
+                echo "----------------------------------------------------------------------------"
+                echo "----------------------retrying workspace information------------------------"
+                echo "----------------------------------------------------------------------------"
+                sh '''
+                    id
                     pwd
-                    ls -alh
-                    '''
-            }
-        }
-
-        stage('Build') {
-            steps {
-               sh '''
-                rm -rf node_modules 
-                ls -alh
-                npm install
+                    ls -lah
                 '''
             }
         }
-
-        stage('check') {
+        stage('clone') {
             steps {
-              sh '''node --version
-                    npm --version
-                    pm2 --version'''
+                echo "----------------------------------------------------------------------------"
+                echo "---------------cloing $params.git_repo_http_url from github-----------------"
+                echo "----------------------------------------------------------------------------"
+                sh script: "rm -rf $params.git_repo_name*"
+                sh """
+                    pwd
+                    ls -alh
+                    git clone "$params.git_repo_http_url"
+                """
             }
         }
-
-        stage('deploy') {
+        stage('Build') {
             steps {
-              sh '''
-                ls -alh
-                pm2 start server.js
-                netstat -ntlp
-              '''
+                echo "----------------------------------------------------------------------------"
+                echo "------building $params.docker_image_name:latest named docker image----------"
+                echo "----------------------------------------------------------------------------"
+                echo ('Build stages....')
+                dir("$params.git_repo_name") {
+                    echo 'building docker image ....'
+                    sh script: "docker build -t $params.docker_image_name:latest ."
+                }
+                
             }
         }
-    }     
+        stage('Push') {
+            steps {
+                echo "----------------------------------------------------------------------------"
+                echo "------pushing image $params.docker_image_name:latest to ecr-----------------"
+                echo "----------------------------------------------------------------------------"
+                sh script: "aws ecr get-login-password --region ap-south-1 --profile iam-jay | docker login --username AWS --password-stdin 332289956654.dkr.ecr.ap-south-1.amazonaws.com"
+                sh script: "docker build -t $params.docker_image_name:latest ."
+                sh script: "docker tag $params.docker_image_name:latest 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_nod e_app:latest"
+                sh script: "docker push 332289956654.dkr.ecr.ap-sou th-1.amazonaws.com/jay_node_app:latest"
+                
+            }
+        }
+        /* stage('Deploy') {
+            steps {
+                 echo ('Deploy stages....')
+                sh script: "docker stop $params.docker_image_name"
+                sh script: "docker rm $params.docker_image_name"
+                sh script: "docker run -d -p 80:$params.container_port --name $params.container_name $params.docker_image_name:latest"
+                sh script: "docker ps"
+                echo "----------------------------------------------------------------------------"
+                echo "docker container with name $params.container_name deployed sucessfully......"
+                echo "----------------------------------------------------------------------------"
+                sh script: "docker rmi \$(docker images | grep '>' | awk '{print \$3}')"
+                echo "old docker image removed sucesssfully."
+
+            }
+        } */
+    }
 }
