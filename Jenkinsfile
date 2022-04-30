@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        EC_REGISTRY = "332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest"
+        ECS_CLUSTER = "TEST-ECS-CLUSTER"
+    }
+
+
     stages {
         stage('info') {
             steps {
@@ -45,12 +51,7 @@ pipeline {
                 echo "----------------------------------------------------------------------------"
                 echo "------pushing image $params.docker_image_name:latest to ecr-----------------"
                 echo "----------------------------------------------------------------------------"
-                sh script: "aws ecr get-login-password --region ap-south-1 --profile iam-jay \'|\' docker login --username AWS --password-stdin 332289956654.dkr.ecr.ap-south-1.amazonaws.com"
-                sh script: "docker build -t $params.docker_image_name:latest ."
-                sh script: "docker tag $params.docker_image_name:latest 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_nod e_app:latest"
-                sh script: "docker push 332289956654.dkr.ecr.ap-sou th-1.amazonaws.com/jay_node_app:latest"
-                
-            }
+                sh 'aws ecr get-login-password --region ap-south-1 --profile iam-jay | docker login --username AWS --password-stdin 332289956654.dkr.ecr.ap-south-1.amazonaws.com'            }
         }
         /* stage('Deploy') {
             steps {
