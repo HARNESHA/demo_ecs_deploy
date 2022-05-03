@@ -61,7 +61,7 @@ pipeline {
         stage('Deploy') {
             steps {
                  echo ('Deploy stages....')
-                sh 'aws ecs update-service --cluster  jay-node-app-cluster --service jay-node-app-service --task-definition jay-node-app-task --force-new-deployment --profile iam-jay'
+                sh 'aws ecs update-service --cluster  jay-node-app-cluster --service jay-node-app-service --task-definition jay-node-app-task --force-new-deployment --profile iam-jay > deploy.log'
                 echo "----------------------------------------------------------------------------"
                 echo "docker container with name $params.container_name deployed sucessfully......"
                 echo "----------------------------------------------------------------------------"
