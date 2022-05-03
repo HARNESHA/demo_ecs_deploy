@@ -3,7 +3,9 @@ pipeline {
 
     environment {
         EC_REGISTRY = "332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest"
-        ECS_CLUSTER = "TEST-ECS-CLUSTER"
+        ECS_CLUSTER = "jay-node-app-cluster"
+        ECS_TASK = "jay-node-app-task"
+        ECS_SERVICE = "jay-node-app-service"
     }
 
 
@@ -61,7 +63,7 @@ pipeline {
         stage('Deploy') {
             steps {
                  echo ('Deploy stages....')
-                sh 'aws ecs update-service --cluster  jay-node-app-cluster --service jay-node-app-service --task-definition jay-node-app-task --force-new-deployment --profile iam-jay > deploy.log'
+                sh 'aws ecs update-service --cluster  $(ECS_CLUSTER) --service $(ECS_SERVICE) --task-definition $(ECS_TASK) --force-new-deployment --profile iam-jay > deploy.log'
                 echo "----------------------------------------------------------------------------"
                 echo "docker container with name $params.container_name deployed sucessfully......"
                 echo "----------------------------------------------------------------------------"
