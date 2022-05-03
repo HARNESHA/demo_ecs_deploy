@@ -58,13 +58,10 @@ pipeline {
                    '''
             }
         }
-        /* stage('Deploy') {
+        stage('Deploy') {
             steps {
                  echo ('Deploy stages....')
-                sh script: "docker stop $params.docker_image_name"
-                sh script: "docker rm $params.docker_image_name"
-                sh script: "docker run -d -p 80:$params.container_port --name $params.container_name $params.docker_image_name:latest"
-                sh script: "docker ps"
+                sh 'aws ecs update-service --cluster  jay-node-app-cluster --service jay-node-app-service --task-definition jay-node-app-task --force-new-deployment --profile iam-jay'
                 echo "----------------------------------------------------------------------------"
                 echo "docker container with name $params.container_name deployed sucessfully......"
                 echo "----------------------------------------------------------------------------"
@@ -72,6 +69,6 @@ pipeline {
                 echo "old docker image removed sucesssfully."
 
             }
-        } */
+        }
     }
 }
