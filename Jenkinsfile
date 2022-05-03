@@ -58,6 +58,7 @@ pipeline {
                     docker tag jay_node_app:latest 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest
                     docker push 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest
                 ''' */
+            }    
         }
         /* stage('Deploy') {
             steps {
