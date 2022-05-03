@@ -51,14 +51,12 @@ pipeline {
                 echo "----------------------------------------------------------------------------"
                 echo "------pushing image $params.docker_image_name:latest to ecr-----------------"
                 echo "----------------------------------------------------------------------------"
-                sh ''' docker login -u AWS -p $(aws ecr get-login-password --region ap-south-1 --profile iam-jay ) 332289956654.dkr.ecr.ap-south-1.amazonaws.com '''
-                //sh 'docker login --username AWS --password $(aws ecr get-login-password --region ap-south-1 --profile iam-jay ) 332289956654.dkr.ecr.ap-south-1.amazonaws.com'            }
-                /* sh '''
-                    "docker build -t jay_node_app ."
+                sh 'aws ecr get-login-password --region ap-south-1 --profile iam-jay | docker login --username AWS --password-stdin 332289956654.dkr.ecr.ap-south-1.amazonaws.com'            }
+                sh '''
+                    docker build -t jay_node_app .
                     docker tag jay_node_app:latest 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest
                     docker push 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest
-                ''' */
-            }    
+                '''
         }
         /* stage('Deploy') {
             steps {
