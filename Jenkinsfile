@@ -24,9 +24,7 @@ pipeline {
         }
         stage('clone') {
             steps {
-                echo "----------------------------------------------------------------------------"
                 echo "---------------cloing $params.git_repo_http_url from github-----------------"
-                echo "----------------------------------------------------------------------------"
                 sh script: "rm -rf $params.git_repo_name*"
                 sh """
                     pwd
@@ -35,35 +33,31 @@ pipeline {
                 """
             }
         }
-        stage('Build') {
+        stage('login') {
             steps {
-                echo "----------------------------------------------------------------------------"
-                echo "------building $params.docker_image_name:latest named docker image----------"
-                echo "----------------------------------------------------------------------------"
-                echo ('Build stages....')
-                dir("$params.git_repo_name") {
-                    echo 'building docker image ....'
-                    sh script: "docker build -t $params.docker_image_name:latest ."
-                }
-                
+                echo "---------------------login to ecr-------------------------"
+                sh "aws ecr get-login-password --region ap-south-1 --profile iam-jay | docker login --username AWS --password-stdin ${EC_REGISTRY}"
+                sh "docker build -t ${EC_REGISTRY} ."
+                sh "docker push ${EC_REGISTRY}"   
             }
         }
-        stage('Push') {
+        stage('build') {
             steps {
-                echo "----------------------------------------------------------------------------"
-                echo "------pushing image $params.docker_image_name:latest to ecr-----------------"
-                echo "----------------------------------------------------------------------------"
-                sh 'aws ecr get-login-password --region ap-south-1 --profile iam-jay | docker login --username AWS --password-stdin 332289956654.dkr.ecr.ap-south-1.amazonaws.com'
-                sh '''
-                    docker build -t 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest .
-                    docker push 332289956654.dkr.ecr.ap-south-1.amazonaws.com/jay_node_app:latest
-                   '''
+                echo "---------------------building docker image------------------------"
+                sh "docker build -t ${EC_REGISTRY} ."
             }
         }
+        stage('push') {
+            steps {
+                echo "---------------------pushing image to ecr-------------------------"
+                sh "docker push ${EC_REGISTRY}"
+            }
+        }
+
         stage('Deploy') {
             steps {
                  echo ('Deploy stages....')
-                sh 'aws ecs update-service --cluster  $(ECS_CLUSTER) --service $(ECS_SERVICE) --task-definition $(ECS_TASK) --force-new-deployment --profile iam-jay > deploy.log'
+                sh "aws ecs update-service --cluster  ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${ECS_TASK)} --force-new-deployment --profile iam-jay > deploy.log"
                 echo "----------------------------------------------------------------------------"
                 echo "docker container with name $params.container_name deployed sucessfully......"
                 echo "----------------------------------------------------------------------------"
